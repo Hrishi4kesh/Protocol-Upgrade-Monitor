@@ -1,0 +1,15 @@
+web3
+requests
+pandas
+numpy
+tweepy
+scikit-learn
+streamlit
+statsmodels
+arch
+prophet
+transformers
+flask
+fastapi
+uvicorn
+python-dotenv
