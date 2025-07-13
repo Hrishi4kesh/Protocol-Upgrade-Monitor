@@ -1,14 +1,15 @@
+#src/sentiment.py
+
 import requests
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import logging
+from config import API_KEY
 
 logger = logging.getLogger("ProtocolUpgradeMonitor")
 
 nltk.download('vader_lexicon')
 analyzer = SentimentIntensityAnalyzer()
-
-API_KEY = "YOUR_NEWSAPI_KEY"  # Replace with actual key or use os.environ.get("NEWSAPI_KEY")
 
 def fetch_news_sentiment(query="Compound Governance Upgrade", limit=10):
     url = (

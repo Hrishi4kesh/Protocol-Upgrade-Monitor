@@ -15,3 +15,6 @@ API_KEY = os.getenv("NEWS_API_KEY")
 
 COINGECKO_URL = "https://api.coingecko.com/api/v3"
 DEFI_LLAMA_URL = "https://api.llama.fi"
+
+if not INFURA_PROJECT_ID:
+    print("⚠️ INFURA_PROJECT_ID not set in environment!")

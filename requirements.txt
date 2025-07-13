@@ -15,4 +15,4 @@ uvicorn
 python-dotenv
 nltk
 snscrape
-yfinance arch
+yfinance

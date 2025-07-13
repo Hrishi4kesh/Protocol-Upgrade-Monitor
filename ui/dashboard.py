@@ -13,9 +13,11 @@ def display_monitoring_settings(col, inputs):
         st.write(f"Upgrade Type: {inputs['upgrade_type']}")
         st.write(f"Time Horizon: {inputs['time_horizon']}")
         st.write(f"Affected Pairs: {inputs['asset_pairs']}")
+        st.markdown(f"🌐 **Network:** `{inputs['network']}`")
 
 
-def display_governance_timeline(col, events, sentiment_score, sentiment_label):
+
+def display_governance_timeline(col, events, sentiment_score, sentiment_label, inputs):
     with col:
         st.subheader("📜 Governance Timeline")
         for event in events[:10]:
@@ -26,7 +28,7 @@ def display_governance_timeline(col, events, sentiment_score, sentiment_label):
             block = event['blockNumber']
             support = event['args']['support']
 
-            risk_score, risk_level = compute_risk_score(votes, sentiment_score)
+            risk_score, risk_level = compute_risk_score(votes, sentiment_score, inputs["risk_threshold"])
             risk_color = "🟢" if risk_level == "Low" else "🟠" if risk_level == "Medium" else "🔴"
 
             st.markdown(f"""
@@ -35,10 +37,11 @@ Voter: `{voter}`
 Support: `{support}`  
 Votes: `{votes}`  
 Sentiment: `{sentiment_label}` ({sentiment_score:.2f})  
-📊 **Risk Score:** `{risk_score}` ({risk_color} {risk_level})  
+📊 **Risk Score:** `{risk_score}` ({risk_color} {risk_level})
 Block: `{block}`  
 TxHash: `{tx_hash}`  
 ---""")
+            st.progress(risk_score / 100)
 
 
 def display_execution_guidance(col, volatility, liquidity, execution_timing, rebalancing, mitigation):
@@ -53,3 +56,5 @@ def display_execution_guidance(col, volatility, liquidity, execution_timing, reb
         st.write(f"⏱️ **Execution Timing**: {execution_timing}")
         st.write(f"📊 **Rebalancing Advice**: {rebalancing}")
         st.write(f"🛡️ **Risk Mitigation**: {mitigation}")
+        st.write(f"📉 **Volatility Impact**: {volatility} (GARCH Model)")
+

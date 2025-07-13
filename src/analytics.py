@@ -1,3 +1,5 @@
+#src/analytics.py
+
 def mock_volatility_impact():
     return "Moderate", "Expect short-term fluctuations due to sentiment uncertainty."
 

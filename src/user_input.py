@@ -8,7 +8,9 @@ def get_user_inputs(
     risk_tolerance,
     upgrade_type,
     time_horizon,
-    asset_pairs
+    asset_pairs,
+    risk_threshold,
+    liquidity_requirement
 ):
     return {
         "network": network,
@@ -19,4 +21,6 @@ def get_user_inputs(
         "upgrade_type": upgrade_type,
         "time_horizon": time_horizon,
         "asset_pairs": asset_pairs,
+        "risk_threshold": risk_threshold,
+        "liquidity_requirement": liquidity_requirement
     }
