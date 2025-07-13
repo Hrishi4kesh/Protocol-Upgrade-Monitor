@@ -1,36 +1,50 @@
 import requests
-import logging
-from config import TWITTER_BEARER_TOKEN
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import nltk
-import time
-import snscrape.modules.twitter as sntwitter
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import logging
 
+logger = logging.getLogger("ProtocolUpgradeMonitor")
 
 nltk.download('vader_lexicon')
+analyzer = SentimentIntensityAnalyzer()
 
-HEADERS = {
-    "Authorization": f"Bearer {TWITTER_BEARER_TOKEN}"
-}
+API_KEY = "YOUR_NEWSAPI_KEY"  # Replace with actual key or use os.environ.get("NEWSAPI_KEY")
 
+def fetch_news_sentiment(query="Compound Governance Upgrade", limit=10):
+    url = (
+        f"https://newsapi.org/v2/everything?"
+        f"q={query}&sortBy=publishedAt&pageSize={limit}&apiKey={API_KEY}"
+    )
 
-# def fetch_tweets(query, limit=10):
-#     tweets = []
-#     try:
-#         command = ["snscrape", "--max-results", str(limit), "twitter-search", query]
-#         result = subprocess.run(command, capture_output=True, text=True, check=True)
-#         for line in result.stdout.strip().split("\n"):
-#             if line:
-#                 tweets.append(line)
-#     except subprocess.CalledProcessError as e:
-#         print("[ERROR] snscrape CLI failed:", e)
-#     return tweets
+    try:
+        response = requests.get(url)
+        data = response.json()
+        articles = data.get("articles", [])
 
-def analyze_sentiment():
-    print("[WARNING] Twitter scraping disabled. Using mock sentiment.")
-    
-    # You can randomize or hardcode these as needed
-    sentiment_score = 0.3
-    sentiment_label = 'Neutral'
-    
-    return sentiment_score, sentiment_label
+        # Fallback if no articles
+        if not articles:
+            logger.warning("No articles found, using fallback headlines")
+            articles = [
+                {"title": "Compound community votes on new governance proposal", "description": "Expected changes in token allocation."},
+                {"title": "Protocol upgrades spark debate on decentralization", "description": "Users question governance voting power."},
+                {"title": "Crypto market reacts to Compound upgrade news", "description": "Token sees mild volatility amid governance changes."}
+            ]
+
+        scores = []
+        for article in articles:
+            text = f"{article.get('title', '')} {article.get('description', '')}"
+            sentiment = analyzer.polarity_scores(text)
+            scores.append(sentiment["compound"])
+
+        avg_sentiment = sum(scores) / len(scores)
+        label = (
+            "Positive" if avg_sentiment > 0.2 else
+            "Negative" if avg_sentiment < -0.2 else
+            "Neutral"
+        )
+        logger.info(f"Computed average sentiment: {avg_sentiment:.3f}")
+        return avg_sentiment, label
+
+    except Exception as e:
+        logger.error(f"Sentiment analysis failed: {e}")
+        return 0.0, "Neutral"
